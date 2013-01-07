@@ -10,7 +10,7 @@ function param($name)
 
 function int_param($name)
 {
-    return isset($_GET[$name]) && is_int($_GET[$name]) ? $_GET[$name] : null;
+    return isset($_GET[$name]) && ctype_digit($_GET[$name]) ? (int) $_GET[$name] : null;
 }
 
 
