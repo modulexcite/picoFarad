@@ -3,17 +3,47 @@
 namespace PicoFarad\Router;
 
 
-function before($callback = null)
+function before($value = null)
 {
     static $before_callback = null;
 
-    if (null !== $callback) {
+    if (is_callable($value)) {
 
-        $before_callback = $callback;
+        $before_callback = $value;
     }
     else if (is_callable($before_callback)) {
 
-        $before_callback();
+        $before_callback($value);
+    }
+}
+
+
+function action($name, \Closure $callback)
+{
+    $handler = isset($_GET['action']) ? $_GET['action'] : 'default';
+
+    if ($handler === $name) {
+
+        before($handler);
+        $callback();
+    }
+}
+
+
+function post_action($name, \Closure $callback)
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        action($name, $callback);
+    }
+}
+
+
+function get_action($name, \Closure $callback)
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+        action($name, $callback);
     }
 }
 
@@ -66,7 +96,7 @@ function find_route($method, $route, \Closure $callback)
 
         if (url_match($route, $url, $params)) {
 
-            before();
+            before($handler);
             \call_user_func_array($callback, $params);
             exit;
         }
