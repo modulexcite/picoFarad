@@ -5,8 +5,17 @@ namespace PicoFarad\Session;
 const SESSION_LIFETIME = 2678400;
 
 
-session_set_cookie_params(SESSION_LIFETIME, '/', null, false, true);
-session_start();
+function open($base_path = '/')
+{
+    session_set_cookie_params(SESSION_LIFETIME, $base_path, null, false, true);
+    session_start();
+}
+
+
+function close()
+{
+    session_destroy();
+}
 
 
 function flash($message)
