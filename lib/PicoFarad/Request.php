@@ -2,6 +2,7 @@
 
 namespace PicoFarad\Request;
 
+
 function param($name)
 {
     return isset($_GET[$name]) ? $_GET[$name] : null;
@@ -35,4 +36,15 @@ function values()
 function body()
 {
     return file_get_contents('php://input');
+}
+
+
+function file_content($name)
+{
+    if (isset($_FILES[$name])) {
+
+        return file_get_contents($_FILES[$name]['tmp_name']);
+    }
+
+    return '';
 }
