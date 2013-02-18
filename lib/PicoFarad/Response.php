@@ -3,6 +3,25 @@
 namespace PicoFarad\Response;
 
 
+function force_download($filename)
+{
+    header('Content-Disposition: attachment; filename="'.$filename.'"');
+}
+
+
+function status($status_code)
+{
+    if (strpos(php_sapi_name(), 'apache') !== false) {
+
+        header('HTTP/1.0 '.$status_code);
+    }
+    else {
+
+        header('Status: '.$status_code);
+    }
+}
+
+
 function redirect($url)
 {
     header('Location: '.$url);
@@ -12,43 +31,59 @@ function redirect($url)
 
 function json(array $data, $status_code = 200)
 {
-    header('HTTP/1.0 '.$status_code);
-    header('Content-Type: application/json');
+    status($status_code);
 
+    header('Content-Type: application/json');
     echo json_encode($data);
+
     exit;
 }
 
 
 function text($data, $status_code = 200)
 {
-    header('HTTP/1.0 '.$status_code);
-    header('Content-Type: text/plain; charset=utf-8');
+    status($status_code);
 
+    header('Content-Type: text/plain; charset=utf-8');
     echo $data;
+
     exit;
 }
 
 
 function html($data, $status_code = 200)
 {
-    header('HTTP/1.0 '.$status_code);
-    header('Content-Type: text/html; charset=utf-8');
+    status($status_code);
 
+    header('Content-Type: text/html; charset=utf-8');
     echo $data;
+
     exit;
 }
 
 
-function csp(array $policies = array('default-src'), array $hosts = array())
+function xml($data, $status_code = 200)
 {
+    status($status_code);
+
+    header('Content-Type: text/xml; charset=utf-8');
+    echo $data;
+
+    exit;
+}
+
+
+function csp(array $policies = array())
+{
+    $policies['default-src'] = "'self'";
+
     foreach (array('X-WebKit-CSP', 'X-Content-Security-Policy', 'Content-Security-Policy') as $header) {
 
         $values = '';
 
-        foreach ($policies as $policy) {
+        foreach ($policies as $policy => $hosts) {
 
-            $values .= rtrim($policy." 'self' ".implode(' ', $hosts)).'; ';
+            $values .= $policy.' '.$hosts.'; ';
         }
 
         header($header.': '.$values);
