@@ -45,7 +45,7 @@ Response
 
     Response\xml('<xml ... >');
 
-### Send binary response
+### Send a binary response
 
     Response\binary($my_file_content);
 
@@ -53,7 +53,7 @@ Response
 
     Response\force_download('The name of the ouput file');
 
-### Change the HTTP status code
+### Modify the HTTP status code
 
     Response\status(403);
 
@@ -70,7 +70,7 @@ Response
     Response\xss()
 
     // Send the header Strict-Transport-Security: max-age=31536000
-    Response\function hsts();
+    Response\hsts();
 
     // Send the header X-Frame-Options: DENY
     Response\xframe();
@@ -82,9 +82,9 @@ Response
     ));
 
     // Send these headers:
-    // Content-Security-Policy: img-src *; default-src 'self';
-    // X-Content-Security-Policy: img-src *; default-src 'self';
-    // X-WebKit-CSP: img-src *; default-src 'self';
+    Content-Security-Policy: img-src *; default-src 'self';
+    X-Content-Security-Policy: img-src *; default-src 'self';
+    X-WebKit-CSP: img-src *; default-src 'self';
 
 Request
 -------
