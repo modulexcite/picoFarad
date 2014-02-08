@@ -1,7 +1,8 @@
-PicoFarad: A minimalist micro-framework for PHP
-===============================================
+PicoFarad
+=========
 
-A very simple library to build a REST API or a small webapp.
+PicoFarad is a minimalist micro-framework for PHP.
+Perfect to build a REST API or a small webapp.
 
 Features
 --------
@@ -9,14 +10,95 @@ Features
 - No dependency
 - Easy to use, fast and very lightweight
 - Only 4 files: Request, Response, Router and Session
+- License: Do what the fuck you want with that
 
 Requirements
 ------------
 
-- PHP >= 5.3 or 5.4
+- PHP >= 5.3
 
 Router
 ------
+
+### Example for a single file webapp:
+
+    <?php
+
+    use PicoFarad\Router;
+    use PicoFarad\Response;
+    use PicoFarad\Request;
+    use PicoFarad\Session;
+
+    // Called before each action
+    Router\before(function($action) {
+
+        // Open a session only for the specified directory
+        Session\open(dirname($_SERVER['PHP_SELF']));
+
+        // HTTP secure headers
+        Response\csp();
+        Response\xframe();
+        Response\xss();
+        Response\nosniff();
+    });
+
+    // GET ?action=show-help
+    Router\get_action('show-help', function() {
+        Response\text('help me!');
+    });
+
+    // POST ?action=hello (with a form value "name")
+    Router\post_action('show-help', function() {
+        Response\text('Hello '.Request\value('name'));
+    });
+
+    // Default action executed
+    Router\notfound(function() {
+        Response\text('Sorry, page not found!');
+    })
+
+### Split your webapp in different files:
+
+    <?php
+
+    use PicoFarad\Router;
+    use PicoFarad\Response;
+
+    // Include automatically those files:
+    // __DIR__.'/controllers/controller1.php'
+    // __DIR__.'/controllers/controller2.php'
+    Router\bootstrap(__DIR__.'/controllers', 'controller1', 'controller2');
+
+    // Page not found
+    Router\notfound(function() {
+        Response\redirect('?action=unread');
+    });
+
+### Example for a REST API:
+
+    // POST /blabla
+    Router\post('/blabla', function() {
+        $values = Request\values();
+        ...
+        Response\json(['result' => true], 201);
+    });
+
+    // GET /blabla/123
+    Router\get('/blabla/:id', function($id) {
+        Response\json(['result' => true]);
+    });
+
+    // PUT /blabla/123
+    Router\put('/blabla/:id', function($id) {
+        $values = Request\values();
+        ...
+        Response\json(['result' => true]);
+    });
+
+    // DELETE /blabla/123
+    Router\delete('/blabla/:id', function($id) {
+        Response\json(['result' => true]);
+    });
 
 Response
 --------
@@ -109,6 +191,10 @@ If a form is submited, you got an array of values.
 If the body is a JSON encoded string you got an array of the decoded JSON.
 
     print_r(Request\values());
+
+### Get a form variable
+
+    echo Request\value('myvariable');
 
 ### Get the content of a uploaded file
 
