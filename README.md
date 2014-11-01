@@ -81,6 +81,8 @@ Router\notfound(function() {
 ### Example for a REST API:
 
 ```php
+<?php
+
 // POST /foo
 Router\post('/foo', function() {
     $values = Request\values();
@@ -112,6 +114,8 @@ Response
 ### Send a JSON response
 
 ```php
+<?php
+
 use PicoFarad\Response;
 
 $data = array(....);
