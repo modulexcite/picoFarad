@@ -22,183 +22,247 @@ Router
 
 ### Example for a single file webapp:
 
-    <?php
+```php
+<?php
 
-    use PicoFarad\Router;
-    use PicoFarad\Response;
-    use PicoFarad\Request;
-    use PicoFarad\Session;
+use PicoFarad\Router;
+use PicoFarad\Response;
+use PicoFarad\Request;
+use PicoFarad\Session;
 
-    // Called before each action
-    Router\before(function($action) {
+// Called before each action
+Router\before(function($action) {
 
-        // Open a session only for the specified directory
-        Session\open(dirname($_SERVER['PHP_SELF']));
+    // Open a session only for the specified directory
+    Session\open(dirname($_SERVER['PHP_SELF']));
 
-        // HTTP secure headers
-        Response\csp();
-        Response\xframe();
-        Response\xss();
-        Response\nosniff();
-    });
+    // HTTP secure headers
+    Response\csp();
+    Response\xframe();
+    Response\xss();
+    Response\nosniff();
+});
 
-    // GET ?action=show-help
-    Router\get_action('show-help', function() {
-        Response\text('help me!');
-    });
+// GET ?action=show-help
+Router\get_action('show-help', function() {
+    Response\text('help me!');
+});
 
-    // POST ?action=hello (with a form value "name")
-    Router\post_action('show-help', function() {
-        Response\text('Hello '.Request\value('name'));
-    });
+// POST ?action=hello (with a form value "name")
+Router\post_action('show-help', function() {
+    Response\text('Hello '.Request\value('name'));
+});
 
-    // Default action executed
-    Router\notfound(function() {
-        Response\text('Sorry, page not found!');
-    })
+// Default action executed
+Router\notfound(function() {
+    Response\text('Sorry, page not found!');
+})
+```
 
 ### Split your webapp in different files:
 
-    <?php
+```php
+<?php
 
-    use PicoFarad\Router;
-    use PicoFarad\Response;
+use PicoFarad\Router;
+use PicoFarad\Response;
 
-    // Include automatically those files:
-    // __DIR__.'/controllers/controller1.php'
-    // __DIR__.'/controllers/controller2.php'
-    Router\bootstrap(__DIR__.'/controllers', 'controller1', 'controller2');
+// Include automatically those files:
+// __DIR__.'/controllers/controller1.php'
+// __DIR__.'/controllers/controller2.php'
+Router\bootstrap(__DIR__.'/controllers', 'controller1', 'controller2');
 
-    // Page not found
-    Router\notfound(function() {
-        Response\redirect('?action=unread');
-    });
+// Page not found
+Router\notfound(function() {
+    Response\redirect('?action=unread');
+});
+```
 
 ### Example for a REST API:
 
-    // POST /blabla
-    Router\post('/blabla', function() {
-        $values = Request\values();
-        ...
-        Response\json(['result' => true], 201);
-    });
+```php
+// POST /foo
+Router\post('/foo', function() {
+    $values = Request\values();
+    ...
+    Response\json(['result' => true], 201);
+});
 
-    // GET /blabla/123
-    Router\get('/blabla/:id', function($id) {
-        Response\json(['result' => true]);
-    });
+// GET /foo/123
+Router\get('/foo/:id', function($id) {
+    Response\json(['result' => true]);
+});
 
-    // PUT /blabla/123
-    Router\put('/blabla/:id', function($id) {
-        $values = Request\values();
-        ...
-        Response\json(['result' => true]);
-    });
+// PUT /foo/123
+Router\put('/foo/:id', function($id) {
+    $values = Request\values();
+    ...
+    Response\json(['result' => true]);
+});
 
-    // DELETE /blabla/123
-    Router\delete('/blabla/:id', function($id) {
-        Response\json(['result' => true]);
-    });
+// DELETE /foo/123
+Router\delete('/foo/:id', function($id) {
+    Response\json(['result' => true]);
+});
+```
 
 Response
 --------
 
 ### Send a JSON response
 
-    use PicoFarad\Response;
+```php
+use PicoFarad\Response;
 
-    $data = array(....);
+$data = array(....);
 
-    // Output the encoded JSON data with a HTTP status 200 Ok
-    Response\json($data);
+// Output the encoded JSON data with a HTTP status 200 Ok
+Response\json($data);
 
-    // Change the default HTTP status code by a 400 Bad Request
-    Response\json($data, 400);
+// Change the default HTTP status code by a 400 Bad Request
+Response\json($data, 400);
+```
 
 ### Send text response
 
-    Response\text('my text data');
+```php
+Response\text('my text data');
+```
 
 ### Send HTML response
 
-    Response\html('<html...>');
+```php
+Response\html('<html...>');
+```
 
 ### Send XML response
 
-    Response\xml('<xml ... >');
+```php
+Response\xml('<xml ... >');
+```
 
 ### Send a binary response
 
-    Response\binary($my_file_content);
+```php
+Response\binary($my_file_content);
+```
 
 ### Force browser download
 
-    Response\force_download('The name of the ouput file');
+```php
+Response\force_download('The name of the ouput file');
+```
 
 ### Modify the HTTP status code
 
-    Response\status(403);
+```php
+Response\status(403);
+```
 
-### Redirection
+### Temporary redirection
 
-    Response\redirect('http://....');
+```php
+Response\redirect('http://....');
+```
+
+### Permanent redirection
+
+```php
+Response\redirect('http://....', 301);
+```
 
 ### Secure headers
 
-    // Send the header X-Content-Type-Options: nosniff
-    Response\nosniff();
+```php
+// Send the header X-Content-Type-Options: nosniff
+Response\nosniff();
 
-    // Send the header X-XSS-Protection: 1; mode=block
-    Response\xss()
+// Send the header X-XSS-Protection: 1; mode=block
+Response\xss()
 
-    // Send the header Strict-Transport-Security: max-age=31536000
-    Response\hsts();
+// Send the header Strict-Transport-Security: max-age=31536000
+Response\hsts();
 
-    // Send the header X-Frame-Options: DENY
-    Response\xframe();
+// Send the header X-Frame-Options: DENY
+Response\xframe();
+```
 
 ### Content Security Policies
 
-    Response\csp(array(
-        'img-src' => '*'
-    ));
+```php
+Response\csp(array(
+    'img-src' => '*'
+));
 
-    // Send these headers:
-    Content-Security-Policy: img-src *; default-src 'self';
-    X-Content-Security-Policy: img-src *; default-src 'self';
-    X-WebKit-CSP: img-src *; default-src 'self';
+// Send these headers:
+Content-Security-Policy: img-src *; default-src 'self';
+X-Content-Security-Policy: img-src *; default-src 'self';
+X-WebKit-CSP: img-src *; default-src 'self';
+```
 
 Request
 -------
 
 ### Get querystring variables
 
-    use PicoFarad\Request;
+```php
+use PicoFarad\Request;
 
-    // Get from the URL: ?toto=value
-    echo Request\param('toto');
+// Get from the URL: ?toto=value
+echo Request\param('toto');
 
-    // Get only integer value: ?toto=2
-    echo Request\int_param('toto');
+// Get only integer value: ?toto=2
+echo Request\int_param('toto');
+```
 
 ### Get the raw body
 
-    echo Request\body();
+```php
+echo Request\body();
+```
 
 ### Get decoded JSON body or form values
 
 If a form is submited, you got an array of values.
 If the body is a JSON encoded string you got an array of the decoded JSON.
 
-    print_r(Request\values());
+```php
+print_r(Request\values());
+```
 
 ### Get a form variable
 
-    echo Request\value('myvariable');
+```php
+echo Request\value('myvariable');
+```
 
 ### Get the content of a uploaded file
 
-    echo Request\file_content('field_form_name');
+```php
+echo Request\file_content('field_form_name');
+```
+
+### Check if the request is a POST
+
+```php
+if (Request\is_post()) {
+    ...
+}
+```
+
+### Check if the request is a GET
+
+```php
+if (Request\is_get()) {
+    ...
+}
+```
+
+### Get the request uri
+
+```php
+echo Request\uri();
+```
 
 Session
 -------
@@ -214,21 +278,25 @@ The session cookie have the following settings:
 
 Example:
 
-    use PicoFarad\Session;
+```php
+use PicoFarad\Session;
 
-    // Session start
-    Session\open('mywebappdirectory');
+// Session start
+Session\open('mywebappdirectory');
 
-    // Destroy the session
-    Session\close();
+// Destroy the session
+Session\close();
+```
 
 ### Flash messages
 
 Set the session variables: `$_SESSION['flash_message']` and `$_SESSION['flash_error_message']`.
 In your template, use a helper to display and delete these messages.
 
-    // Standard message
-    Session\flash('My message');
+```php
+// Standard message
+Session\flash('My message');
 
-    // Error message
-    Session\flash_error('My error message');
+// Error message
+Session\flash_error('My error message');
+```

@@ -76,3 +76,21 @@ function file_move($field, $destination)
         move_uploaded_file($_FILES[$field]['tmp_name'], $destination);
     }
 }
+
+
+function uri()
+{
+    return $_SERVER['REQUEST_URI'];
+}
+
+
+function is_post()
+{
+    return $_SERVER['REQUEST_METHOD'] === 'POST';
+}
+
+
+function is_get()
+{
+    return $_SERVER['REQUEST_METHOD'] === 'GET';
+}

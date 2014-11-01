@@ -28,9 +28,9 @@ function status($status_code)
 }
 
 
-function redirect($url)
+function redirect($url, $status_code = 302)
 {
-    header('Location: '.$url);
+    header('Location: '.$url, true, $status_code);
     exit;
 }
 
